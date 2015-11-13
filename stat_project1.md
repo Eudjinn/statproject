@@ -141,3 +141,12 @@ ggplot(data = NULL, aes(expmeans)) +
 
 ![](stat_project1_files/figure-html/third-2.png) 
 
+```r
+# Q-Q plot to confirm data normality
+qplot(sample = expmeans) + 
+    geom_abline(intercept = normtheory.mean, slope = normtheory.sd) + 
+    labs(title = "Q-Q plot of sample means")
+```
+
+![](stat_project1_files/figure-html/third-3.png) 
+

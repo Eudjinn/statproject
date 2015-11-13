@@ -135,5 +135,11 @@ ggplot(data = NULL, aes(expmeans)) +
     labs(title = "Histogram of means of exponential distribution", 
          x = "Mean of sample from exponential distribution", 
          y = "Density")
+
+# Q-Q plot to confirm data normality
+qplot(sample = expmeans) + 
+    geom_abline(intercept = normtheory.mean, slope = normtheory.sd) + 
+    labs(title = "Q-Q plot of sample means")
+
 ```
 
