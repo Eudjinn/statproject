@@ -1,12 +1,16 @@
 ---
 title: "Statistical Inference course project - simulation exercise"
 author: "Evgeniy Zabrodskiy"
-output: 
+date: "November, 2015"
+output:
   html_document:
-    keep_md: true
+    keep_md: yes
 ---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.height = 4, fig.width = 6)
+```
 
-```{r, echo = FALSE}
+```{r}
 library(ggplot2)
 ```
 
@@ -14,25 +18,17 @@ library(ggplot2)
 This is the first part of the project for the statistical inference class. It is aimed at exploring inference and doing some simple inferential data analysis using simulated data. We'll investigate the exponential distribution and compare it with the Central Limit Theorem.
 
 ## Simulations 
+The exponential distribution can be simulated in R with `rexp(n, lambda)` where lambda is the rate parameter. The mean of exponential distribution is $\frac{1}{\lambda}$ and the standard deviation is also $\frac{1}{\lambda}$.  
 
-The exponential distribution can be simulated in R with `rexp(n, lambda)` where lambda is the rate parameter. The mean of exponential distribution is 1/lambda and the standard deviation is also 1/lambda.  
-
-Next piece of code defines the variables used for simulation and performs the simulation: 
-
-```{r}
-# rate parameter for exponential distribution
+```{r init}
 lambda <- 0.2
-# sample size from exponential distribution for calculation of averages
 n <- 40
-# number of simulations (number of averages)
 nsim <- 1000
-# sample size for exponential distribution
-ssize <- 1000
 ```
 
 We perform `r nsim` simulations for which we calculate the average of `r n` random generated numbers from exponential distribution with lambda = `r lambda`.
 
-```{r}
+```{r simulation}
 # initializing variable for averages of samples from exponential distribution
 simulated <- NULL
 
@@ -69,12 +65,12 @@ ggplot(data = NULL, aes(simulated)) +
     geom_vline(aes(xintercept = theory.mean), 
                color = "red", 
                size = 1) +
-    labs(title = "Histogram of averages of samples from exponential distribution", 
+    labs(title = "Averages of samples from exponential distribution", 
          x = "Mean of samples from exponential distribution", 
          y = "Density")
 ```
 
-Theoretical mean of the simultated distribution of averages of `r n` numbers from exponential distribution is the same as the mean of the original exponential distribution: 1/lambda. 
+Theoretical mean of the simultated distribution of averages of `r n` numbers from exponential distribution is the same as the mean of the original exponential distribution: 1/lambda:  
 
 **Theoretical mean = `r theory.mean`**  
 **Sample mean = `r simulated.mean`**  
@@ -94,15 +90,18 @@ simulated.sd = sd(simulated)
 simulated.var = simulated.sd^2
 ```
 
-**Theoretical variance = `r theory.var`**  
+Theoretical variance of the distribution of averages of samples from exponential distribution is $\frac{1}{\lambda^{2}n}$:  
+
+**Theoretical variance = $\frac{1}{`r lambda`^{2}*`r n`}$ = `r theory.var`**  
 **Sample variance = `r simulated.var`**  
 
-The sample variance of the simulated distribution of averages can be used to get the approximation of the variance of the original exponential distribution: $Var_{exp} = Var_{sim}*n$ = `r simulated.var` * `r n` = `r simulated.var * n` which is close to theoretical value $\frac{1}{\lambda^{2}}$ = `r 1/lambda^2`
+The sample variance of the simulated distribution of averages can be used to get the approximation of the variance of the original exponential distribution: $Var_{exp} = Var_{sim}n$ = `r simulated.var` * `r n` = `r simulated.var * n` which is close to theoretical value $\frac{1}{\lambda^{2}}$ = `r 1/lambda^2`
 
 ### 3. Distribution
 In this section we'll compare the original exponential distribution with the distribution of averages that we simulated before.  
 Here is the histogram representing an exponential distribution with the density line.
 ```{r third_exp}
+ssize <- 1000
 expsample <- rexp(ssize, lambda)
 
 expsample.range <- max(expsample) - min(expsample)
@@ -114,7 +113,7 @@ ggplot(data = NULL, aes(expsample)) +
                   color = "green", 
                   size = 1, 
                   args = list(rate = lambda)) +
-    labs(title = "Histogram of exponential distribution", 
+    labs(title = "Sample exponential distribution", 
          x = "Sample of exponential distribution", 
          y = "Density")
 ```
@@ -138,7 +137,7 @@ ggplot(data = NULL, aes(simulated)) +
                   size = 1, 
                   args = list(mean = theory.mean, 
                               sd = theory.sd)) +
-    labs(title = "Histogram of averages of samples from exponential distribution", 
+    labs(title = "Averages of samples from exponential distribution", 
          x = "Mean of samples from exponential distribution", 
          y = "Density")
 ```
@@ -150,7 +149,120 @@ There is another way to show that the distribution is normal using a Q-Q plot. H
 # Q-Q plot to confirm data normality
 qplot(sample = simulated) + 
     geom_abline(intercept = theory.mean, slope = theory.sd) + 
-    labs(title = "Q-Q plot of averages of samples from exponential distribution")
+    labs(title = "Q-Q plot of simulated distribution")
 ```
 
 All the points lie very close to the line which is drawn using theoretical mean and standard deviation of the distribution of averages. This plot also confirms that the simulated distribution of averages is normal.
+
+\newpage  
+
+## Appendix - source code 
+### Initialization code  
+```{r init_code, echo = TRUE, eval = FALSE}
+lambda <- 0.2
+n <- 40
+nsim <- 1000
+```
+
+### Simulation code
+```{r simulation_code, echo = TRUE, eval = FALSE}
+# initializing variable for averages of samples from exponential distribution
+simulated <- NULL
+
+set.seed(12345)
+
+for(i in 1:nsim) 
+    simulated <- c(simulated, mean(rexp(n, lambda)))
+```
+
+### 1. Sample Mean versus Theoretical Mean code
+```{r first_code, echo = TRUE, eval = FALSE}
+# common parameter for histograms - number of bins
+nbins = 10
+# range is needed to calculate the width of the bin of a histogram
+simulated.range <- max(simulated) - min(simulated)
+
+# theoretical mean is the same both for the original exponential distribution
+# and for simulated distribution of averages.
+theory.mean <- 1/lambda
+# calculate the smaple mean of the simulated distribution of averages
+simulated.mean <- mean(simulated)
+
+ggplot(data = NULL, aes(simulated)) + 
+    geom_histogram(binwidth = simulated.range/nbins, 
+                   col = "blue", 
+                   aes(y = ..density.., 
+                       fill=..count..)) + 
+    # sample mean will be shown as a vertical green line on the histogram.
+    geom_vline(aes(xintercept = simulated.mean), 
+               color = "green", 
+               size = 1) +
+    # theoretical mean will be shown as a vertical red line on the histogram.
+    geom_vline(aes(xintercept = theory.mean), 
+               color = "red", 
+               size = 1) +
+    labs(title = "Averages of samples from exponential distribution", 
+         x = "Mean of samples from exponential distribution", 
+         y = "Density")
+```
+
+### 2. Sample Variance versus Theoretical Variance code
+```{r second_code, echo = TRUE, eval = FALSE}
+# theoretical value of the standard deviation of the sample distribution of 
+# averages is 1/lambda * 1/sqrt(n)
+theory.sd <- 1/lambda * 1/sqrt(n)
+theory.var <- theory.sd^2
+
+# standard deviation and variance of the simulated distribution of averages
+simulated.sd = sd(simulated)
+simulated.var = simulated.sd^2
+```
+
+### 3. Distribution code
+```{r third_exp_code, echo = TRUE, eval = FALSE}
+ssize <- 1000
+expsample <- rexp(ssize, lambda)
+
+expsample.range <- max(expsample) - min(expsample)
+
+ggplot(data = NULL, aes(expsample)) + 
+    geom_histogram(binwidth = expsample.range/nbins, col = "blue", aes(y = ..density.., fill=..count..)) + 
+    # draw density line of theoretical exponential distribution with lambda
+    stat_function(fun = dexp, 
+                  color = "green", 
+                  size = 1, 
+                  args = list(rate = lambda)) +
+    labs(title = "Sample exponential distribution", 
+         x = "Sample of exponential distribution", 
+         y = "Density")
+```
+
+```{r third_norm_code, echo = TRUE, eval = FALSE}
+ggplot(data = NULL, aes(simulated)) + 
+    geom_histogram(binwidth = simulated.range/nbins, 
+                   col = "blue", 
+                   aes(y = ..density.., 
+                       fill = ..count..)) + 
+    # draw a normal distribution curve using theoretical mean and sd.
+    stat_function(fun = dnorm, 
+                  color = "green", 
+                  size = 1, 
+                  args = list(mean = simulated.mean, 
+                              sd = simulated.sd)) +
+    # draw a normal distribution curve using calculated mean and sd.
+    stat_function(fun = dnorm, 
+                  color = "red", 
+                  size = 1, 
+                  args = list(mean = theory.mean, 
+                              sd = theory.sd)) +
+    labs(title = "Averages of samples from exponential distribution", 
+         x = "Mean of samples from exponential distribution", 
+         y = "Density")
+```
+
+```{r third_qq_code, echo = TRUE, eval = FALSE}
+# Q-Q plot to confirm data normality
+qplot(sample = simulated) + 
+    geom_abline(intercept = theory.mean, slope = theory.sd) + 
+    labs(title = "Q-Q plot of simulated distribution")
+```

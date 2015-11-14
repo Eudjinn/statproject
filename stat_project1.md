@@ -1,5 +1,7 @@
 # Statistical Inference course project - simulation exercise
 Evgeniy Zabrodskiy  
+November, 2015  
+
 
 
 
@@ -7,25 +9,63 @@ Evgeniy Zabrodskiy
 This is the first part of the project for the statistical inference class. It is aimed at exploring inference and doing some simple inferential data analysis using simulated data. We'll investigate the exponential distribution and compare it with the Central Limit Theorem.
 
 ## Simulations 
-
-The exponential distribution can be simulated in R with `rexp(n, lambda)` where lambda is the rate parameter. The mean of exponential distribution is 1/lambda and the standard deviation is also 1/lambda.  
-
-Next piece of code defines the variables used for simulation and performs the simulation: 
+The exponential distribution can be simulated in R with `rexp(n, lambda)` where lambda is the rate parameter. The mean of exponential distribution is $\frac{1}{\lambda}$ and the standard deviation is also $\frac{1}{\lambda}$.  
 
 
-```r
-# rate parameter for exponential distribution
-lambda <- 0.2
-# sample size from exponential distribution for calculation of averages
-n <- 40
-# number of simulations (number of averages)
-nsim <- 1000
-# sample size for exponential distribution
-ssize <- 1000
-```
 
 We perform 1000 simulations for which we calculate the average of 40 random generated numbers from exponential distribution with lambda = 0.2.
 
+
+
+## Simulation results
+### 1. Sample Mean versus Theoretical Mean
+![](stat_project1_files/figure-html/first-1.png) 
+
+Theoretical mean of the simultated distribution of averages of 40 numbers from exponential distribution is the same as the mean of the original exponential distribution: 1/lambda:  
+
+**Theoretical mean = 5**  
+**Sample mean = 4.971972**  
+
+From the simulation we can see that the sample mean is almost identical to the theoretical mean.
+On the histogram there are green and red vertical lines which represent the sample mean and the theoretical mean accordingly.
+
+### 2. Sample Variance versus Theoretical Variance
+
+
+Theoretical variance of the distribution of averages of samples from exponential distribution is $\frac{1}{\lambda^{2}n}$:  
+
+**Theoretical variance = $\frac{1}{0.2^{2}*40}$ = 0.625**  
+**Sample variance = 0.5954369**  
+
+The sample variance of the simulated distribution of averages can be used to get the approximation of the variance of the original exponential distribution: $Var_{exp} = Var_{sim}n$ = 0.5954369 * 40 = 23.8174762 which is close to theoretical value $\frac{1}{\lambda^{2}}$ = 25
+
+### 3. Distribution
+In this section we'll compare the original exponential distribution with the distribution of averages that we simulated before.  
+Here is the histogram representing an exponential distribution with the density line.
+![](stat_project1_files/figure-html/third_exp-1.png) 
+
+Below is the histogram of the same distribution of averages that was simulated before and used in previous sections but this time density lines of the normal distribution are added.  
+![](stat_project1_files/figure-html/third_norm-1.png) 
+
+Green line is drawn using theoretical mean and standard deviation. Red line is drawn using mean and standard deviation values calculated on the actual simulated data. These curves are the visual evidence that the simulated collection of averages has normal distribution.  
+
+There is another way to show that the distribution is normal using a Q-Q plot. Here is how it looks like:
+![](stat_project1_files/figure-html/third_qq-1.png) 
+
+All the points lie very close to the line which is drawn using theoretical mean and standard deviation of the distribution of averages. This plot also confirms that the simulated distribution of averages is normal.
+
+\newpage  
+
+## Appendix - source code 
+### Initialization code  
+
+```r
+lambda <- 0.2
+n <- 40
+nsim <- 1000
+```
+
+### Simulation code
 
 ```r
 # initializing variable for averages of samples from exponential distribution
@@ -37,8 +77,7 @@ for(i in 1:nsim)
     simulated <- c(simulated, mean(rexp(n, lambda)))
 ```
 
-## Simulation results
-### 1. Sample Mean versus Theoretical Mean
+### 1. Sample Mean versus Theoretical Mean code
 
 ```r
 # common parameter for histograms - number of bins
@@ -65,22 +104,12 @@ ggplot(data = NULL, aes(simulated)) +
     geom_vline(aes(xintercept = theory.mean), 
                color = "red", 
                size = 1) +
-    labs(title = "Histogram of averages of samples from exponential distribution", 
+    labs(title = "Averages of samples from exponential distribution", 
          x = "Mean of samples from exponential distribution", 
          y = "Density")
 ```
 
-![](stat_project1_files/figure-html/first-1.png) 
-
-Theoretical mean of the simultated distribution of averages of 40 numbers from exponential distribution is the same as the mean of the original exponential distribution: 1/lambda. 
-
-**Theoretical mean = 5**  
-**Sample mean = 4.971972**  
-
-From the simulation we can see that the sample mean is almost identical to the theoretical mean.
-On the histogram there are green and red vertical lines which represent the sample mean and the theoretical mean accordingly.
-
-### 2. Sample Variance versus Theoretical Variance
+### 2. Sample Variance versus Theoretical Variance code
 
 ```r
 # theoretical value of the standard deviation of the sample distribution of 
@@ -93,16 +122,10 @@ simulated.sd = sd(simulated)
 simulated.var = simulated.sd^2
 ```
 
-**Theoretical variance = 0.625**  
-**Sample variance = 0.5954369**  
-
-The sample variance of the simulated distribution of averages can be used to get the approximation of the variance of the original exponential distribution: $Var_{exp} = Var_{sim}*n$ = 0.5954369 * 40 = 23.8174762 which is close to theoretical value $\frac{1}{\lambda^{2}}$ = 25
-
-### 3. Distribution
-In this section we'll compare the original exponential distribution with the distribution of averages that we simulated before.  
-Here is the histogram representing an exponential distribution with the density line.
+### 3. Distribution code
 
 ```r
+ssize <- 1000
 expsample <- rexp(ssize, lambda)
 
 expsample.range <- max(expsample) - min(expsample)
@@ -114,14 +137,11 @@ ggplot(data = NULL, aes(expsample)) +
                   color = "green", 
                   size = 1, 
                   args = list(rate = lambda)) +
-    labs(title = "Histogram of exponential distribution", 
+    labs(title = "Sample exponential distribution", 
          x = "Sample of exponential distribution", 
          y = "Density")
 ```
 
-![](stat_project1_files/figure-html/third_exp-1.png) 
-
-Below is the histogram of the same distribution of averages that was simulated before and used in previous sections but this time density lines of the normal distribution are added.  
 
 ```r
 ggplot(data = NULL, aes(simulated)) + 
@@ -141,24 +161,15 @@ ggplot(data = NULL, aes(simulated)) +
                   size = 1, 
                   args = list(mean = theory.mean, 
                               sd = theory.sd)) +
-    labs(title = "Histogram of averages of samples from exponential distribution", 
+    labs(title = "Averages of samples from exponential distribution", 
          x = "Mean of samples from exponential distribution", 
          y = "Density")
 ```
 
-![](stat_project1_files/figure-html/third_norm-1.png) 
-
-Green line is drawn using theoretical mean and standard deviation. Red line is drawn using mean and standard deviation values calculated on the actual simulated data. These curves are the visual evidence that the simulated collection of averages has normal distribution.  
-
-There is another way to show that the distribution is normal using a Q-Q plot. Here is how it looks like:
 
 ```r
 # Q-Q plot to confirm data normality
 qplot(sample = simulated) + 
     geom_abline(intercept = theory.mean, slope = theory.sd) + 
-    labs(title = "Q-Q plot of averages of samples from exponential distribution")
+    labs(title = "Q-Q plot of simulated distribution")
 ```
-
-![](stat_project1_files/figure-html/third_qq-1.png) 
-
-All the points lie very close to the line which is drawn using theoretical mean and standard deviation of the distribution of averages. This plot also confirms that the simulated distribution of averages is normal.
