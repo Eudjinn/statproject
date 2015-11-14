@@ -15,7 +15,8 @@ knitr::opts_chunk$set(echo = FALSE, fig.height = 4, fig.width = 6)
 library(ggplot2)
 ```
 ## Overview
-This is the first part of the project for the statistical inference class. It is aimed at exploring inference and doing some simple inferential data analysis using simulated data. We'll investigate the exponential distribution and compare it with the Central Limit Theorem.
+This is the first part of the project for the statistical inference class. It is aimed at exploring inference and doing some simple inferential data analysis using simulated data. We'll investigate the exponential distribution and compare it with the Central Limit Theorem.  
+The CLT states that **the averages are approximately normal with distributions centered at the population mean with standard deviation equal to the standard error of the mean**.
 
 ## Simulations 
 The exponential distribution can be simulated in R with `rexp(n, lambda)` where lambda is the rate parameter. The mean of exponential distribution is $\frac{1}{\lambda}$ and the standard deviation is also $\frac{1}{\lambda}$.  
