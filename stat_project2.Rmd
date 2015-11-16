@@ -29,8 +29,8 @@ str(ToothGrowth)
 ```
 We can see that there are three variables:  
 - len contains the length of the odontoblasts in microns;  
-- supp is a factor variable showing the type of the supplement containing Vitamin C ("OJ" == Orange Juice, "VC" == Ascrobic Acid);  
-- dose stores the dose of Vitamin C in miligrams. It will be converted to factor for convenience.  
+- supp is a factor variable showing the type of the supplement containing Vitamin C ("OJ" stands for "Orange Juice"", "VC" stands for "Ascrobic Acid");  
+- dose stores the dose of Vitamin C in miligrams. The variable type will be converted to factor for convenience.  
 
 Dataframe summary:  
 ```{r}
@@ -44,18 +44,7 @@ head(ToothGrowth, 2)
 ```
 
 ### Exploratory plots
-This boxplot shows the distribution of length per supp.  
-```{r}
-qplot(data = ToothGrowth, 
-      geom = "boxplot", 
-      x = supp, 
-      y = len, 
-      color = supp)
-```
-
-This plot raises a question whether the length of odontoblasts of pigs receiving Vitamin C with orange juice is not equal to the mean length in the group of pigs which recieved Vitamin C as ascrobic acid, not taking into account different doses. But it would be better to divide the boxes by dose to make better assumptions.  
-
-The boxplot below shows the distribution of length for each supp per dose:  
+The boxplot below shows the distribution of length for each *supp* per *dose*:  
 ```{r}
 qplot(data = ToothGrowth, 
       geom = "boxplot", 
@@ -64,31 +53,25 @@ qplot(data = ToothGrowth,
       color = supp)
 ```
 
-This boxplot shows some more details based on which we make the following assumptions:  
+Based on this boxplot we can make different assumptions. Some of them will be described and tested below.  
 
-**Assumption 1**: Mean length of odontoblasts is different for group of pigs which received Vitamin C with orange juice and group of pigs which recieved Vitamin C as ascrobic acid, dose 0.5 mg.  
+## Assumptions
+**Assumption 1**: Mean length of odontoblasts is different in two groups with the following properties:  
+Group A: pigs which received Vitamin C with **orange juice**, dose **0.5 mg**;  
+Group B: pigs which recieved Vitamin C as **ascrobic acid**, dose **0.5 mg**.  
+(same dose, different supplements)  
 
-**Assumption 2**: Mean length of odontoblasts is different for group of pigs which received Vitamin C with orange juice and group of pigs which recieved Vitamin C as ascrobic acid, dose 1 mg.  
+**Assumption 2**: Mean length of odontoblasts is different in two groups with the following properites:  
+Group A: pigs which received Vitamin C with **orange juice**, dose **0.5 mg**;  
+Group B: pigs which received Vitamin C with **orange juice**, dose **1 mg**.  
+(same supplement, different doses)  
 
-**Assumption 3**: There is no significant difference in mean lengths for both supplements with dose 2 mg.
+There are more assumptions that can be made but they are all similar and are tested the same way.  
 
-The boxplot below shows the distribution of length for each dose per supp:  
-```{r}
-qplot(data = ToothGrowth, 
-      geom = "boxplot", 
-      x = supp, 
-      y = len, 
-      color = dose)
-```
+## Testing assumptions and making conclusions
+Talking about lengths of odontoblasts we may assume that the lengths population is normally distributed even though we cannot clearly see that from the sample data. Based on this assumption and taking into account that the sample sizes of the groups we are going to compare is quite small (10 elements each), we should use Student's T-test to confirm or reject our assumptions. Also it is assumed that the variances of the populations of tested samples are equal since all the pigs belong to the same spicies and the study is randomized.
 
-**Assumption 4**: Mean length of odontoblasts is different for subgroups with doses 0.5 mg and 1 mg in group which recieved Vitamin C with orange juice.  
-
-There are more assumptions that can be made but they are all similar and are tested the same way. 
-
-## Testing assumptions and conclusions
-Talking about lengths of odontoblasts we may assume that the lengths population is normally distributed even though we cannot clearly see that from the sample data. Based on this assumption and taking into account that the sample sizes of the groups we are going to compare is quite small (10 elements each), we should use Student's T-test to confirm or reject our assumptions. Also it is assumed that the variances of the populations of tested samples are different since all the pigs belong to the same spicies and the study is randomized.
-
-**Assumption 1**: Mean length of odontoblasts is different for group of pigs which received Vitamin C with orange juice and group of pigs which recieved Vitamin C as ascrobic acid, dose 0.5 mg.  
+### Hypothesis testing for assumption 1:
 
 $H_{0}:\mu_{oj,0.5} = \mu_{vc,0.5}$  
 $H_{1}:\mu_{oj,0.5} \ne \mu_{vc,0.5}$  
@@ -108,15 +91,15 @@ From the T-test output we can see that p-value = $`r t1$p.value`$ which represen
 
 **Conclusion 1**: Assumption 1 is confirmed: mean length of odontoblasts is different for the groups of pigs which recieved 0.5 mg dose of Vitamin C in forms of orange juice and ascorbic acid.  
 
-**Assumption 2**: Mean length of odontoblasts is different for group of pigs which received Vitamin C with orange juice and group of pigs which recieved Vitamin C as ascrobic acid, dose 1 mg.  
+### Hypothesis testing for assumption 2:
 
-$H_{0}:\mu_{oj,1} = \mu_{vc,1}$  
-$H_{1}:\mu_{oj,1} \ne \mu_{vc,1}$  
+$H_{0}:\mu_{oj,0.5} = \mu_{oj,1}$  
+$H_{1}:\mu_{oj,0.5} \ne \mu_{oj,1}$  
 
 ```{r}
-len.VC.1 <- ToothGrowth$len[ToothGrowth$supp == "VC" & ToothGrowth$dose == 1]
+len.OJ.05 <- ToothGrowth$len[ToothGrowth$supp == "OJ" & ToothGrowth$dose == 0.5]
 len.OJ.1 <- ToothGrowth$len[ToothGrowth$supp == "OJ" & ToothGrowth$dose == 1]
-t2 <- t.test(len.VC.1, 
+t2 <- t.test(len.OJ.05, 
              len.OJ.1, 
              alternative = "two.sided", 
              paired = FALSE, 
@@ -126,44 +109,35 @@ t2
 
 From the T-test output we can see that p-value = $`r t2$p.value`$ which represents the probability of $H_{0}$ being true and since it is less than $\alpha = 0.05$ for a two-sided test we may reject $H_{0}$.  
 
-**Conclusion 2**: Assumption 2 is confirmed: mean length of odontoblasts is different for the groups of pigs which recieved 1 mg dose of Vitamin C in forms of orange juice and ascorbic acid.
+**Conclusion 2**: Assumption 2 is confirmed: mean length of odontoblasts difference is significant for subgroups of pigs which recieved 0.5 mg and 1 mg dose of Vitamin C with orange juice.
 
-**Assumption 3**: There is no significant difference in mean lengths for both supplements with dose 2 mg.  
+\newpage
 
-$H_{0}:\mu_{oj,2} = \mu_{vc,2}$  
-$H_{1}:\mu_{oj,2} \ne \mu_{vc,2}$  
+## Appendix - source code and additional plots
 
-```{r}
-len.VC.2 <- ToothGrowth$len[ToothGrowth$supp == "VC" & ToothGrowth$dose == 2]
-len.OJ.2 <- ToothGrowth$len[ToothGrowth$supp == "OJ" & ToothGrowth$dose == 2]
-t3 <- t.test(len.VC.2, 
-             len.OJ.2, 
-             alternative = "two.sided", 
-             paired = FALSE, 
-             var.equal = TRUE)
-t3
+```{r, echo = TRUE, eval = FALSE}
+data("ToothGrowth")
+str(ToothGrowth)
+ToothGrowth$dose <- as.factor(ToothGrowth$dose)
+summary(ToothGrowth)
+head(ToothGrowth, 2)
+```
+Source code for the boxplot which is used in the analysis part of the document:  
+```{r, echo = TRUE, eval = FALSE}
+qplot(data = ToothGrowth, 
+      geom = "boxplot", 
+      x = dose, 
+      y = len, 
+      color = supp)
 ```
 
-From the T-test output we can see that p-value = $`r t3$p.value`$ which represents the probability of $H_{0}$ being true. This pobability is so high, so we cannot reject the $H_{0}$ for sure.  
+This boxplot is not included in the analysis part due to document length restrictions but it can be useful to view some properties of the data distribution:
 
-**Conclusion 3**: Assumption 3 is confirmed: mean length of odontoblasts is the same for the groups of pigs which recieved 2 mg dose of Vitamin C in forms of orange juice and ascorbic acid.
-
-**Assumption 4**: Mean length of odontoblasts is different for subgroups with doses 0.5 mg and 1 mg in group which recieved Vitamin C with orange juice.  
-
-$H_{0}:\mu_{oj,0.5} = \mu_{oj,1}$  
-$H_{1}:\mu_{oj,0.5} \ne \mu_{oj,1}$  
-
-```{r}
-len.OJ.05 <- ToothGrowth$len[ToothGrowth$supp == "OJ" & ToothGrowth$dose == 0.5]
-len.OJ.1 <- ToothGrowth$len[ToothGrowth$supp == "OJ" & ToothGrowth$dose == 1]
-t4 <- t.test(len.OJ.05, 
-             len.OJ.1, 
-             alternative = "two.sided", 
-             paired = FALSE, 
-             var.equal = TRUE)
-t4
+```{r, echo = TRUE}
+qplot(data = ToothGrowth, 
+      geom = "histogram", 
+      binwidth = 2, 
+      x = len, 
+      fill = dose, 
+      facets = dose~supp)
 ```
-
-From the T-test output we can see that p-value = $`r t4$p.value`$ which represents the probability of $H_{0}$ being true and since it is less than $\alpha = 0.05$ for a two-sided test we may reject $H_{0}$.  
-
-**Conclusion 4**: Assumption 4 is confirmed: mean length of odontoblasts difference is significant for subgroups of pigs which recieved 0.5 mg and 1 mg dose of Vitamin C with orange juice.
