@@ -69,7 +69,7 @@ Group B: pigs which received Vitamin C with **orange juice**, dose **1 mg**.
 There are more assumptions that can be made but they are all similar and are tested the same way.  
 
 ## Testing assumptions and making conclusions
-Talking about lengths of odontoblasts we may assume that the lengths population is normally distributed even though we cannot clearly see that from the sample data. Based on this assumption and taking into account that the sample sizes of the groups we are going to compare is quite small (10 elements each), we should use Student's T-test to confirm or reject our assumptions. Also it is assumed that the variances of the populations of tested samples are equal since all the pigs belong to the same spicies and the study is randomized.
+Talking about lengths of odontoblasts we may assume that the lengths population is normally distributed even though we cannot clearly see that from the sample data. Based on this assumption and taking into account that the sample sizes of the groups we are going to compare is quite small (10 elements each), we should use Student's t-test to confirm or reject our assumptions. Also it is assumed that the variances of the populations are different, thus Welch Two Sample t-test modification of Student's t-test will be used.
 
 ### Hypothesis testing for assumption 1:
 
@@ -83,11 +83,11 @@ t1 <- t.test(len.VC.05,
              len.OJ.05, 
              alternative = "two.sided", 
              paired = FALSE, 
-             var.equal = TRUE)
+             var.equal = FALSE)
 t1
 ```
 
-From the T-test output we can see that p-value = $`r t1$p.value`$ which represents the probability of $H_{0}$ being true and since it is less than $\alpha = 0.05$ for a two-sided test we may reject $H_{0}$. Also the confidence interval which does not contain zero can be used to make the same conclusion. It means that with 95% probability ($1-\alpha$) the true difference of the means of the populations will be within the borders of the interval. 
+From the T-test output we can see that p-value = $`r t1$p.value`$ which represents the probability of $H_{0}$ being true and since it is less than $\alpha = 0.05$ for a two-sided test we may reject $H_{0}$. Also the confidence interval which does not contain zero can be used to make the same conclusion. It means that with 95% probability the true difference of the means of the populations will be within the borders of the interval. 
 
 **Conclusion 1**: Assumption 1 is confirmed: mean length of odontoblasts is different for the groups of pigs which recieved 0.5 mg dose of Vitamin C in forms of orange juice and ascorbic acid.  
 
@@ -103,7 +103,7 @@ t2 <- t.test(len.OJ.05,
              len.OJ.1, 
              alternative = "two.sided", 
              paired = FALSE, 
-             var.equal = TRUE)
+             var.equal = FALSE)
 t2
 ```
 
@@ -131,7 +131,7 @@ qplot(data = ToothGrowth,
       color = supp)
 ```
 
-This boxplot is not included in the analysis part due to document length restrictions but it can be useful to view some properties of the data distribution:
+The following boxplot is not included in the analysis part due to document length restrictions but it can be useful to view some properties of the data distribution:
 
 ```{r, echo = TRUE}
 qplot(data = ToothGrowth, 
