@@ -121,7 +121,7 @@ ggplot(data = NULL, aes(expsample)) +
          y = "Density")
 ```
 
-Below is the histogram of the same distribution of averages that was simulated before and used in previous sections but this time density lines of the normal distribution are added.  
+Below is the histogram of the same distribution of averages that was simulated before and used in previous sections but this time density lines are added (theoretical and actual).  
   
 ```{r third_norm}
 ggplot(data = NULL, aes(simulated)) + 
@@ -135,18 +135,15 @@ ggplot(data = NULL, aes(simulated)) +
                   size = 1, 
                   args = list(mean = simulated.mean, 
                               sd = simulated.sd)) +
-    # draw a normal distribution curve using calculated mean and sd.
-    stat_function(fun = dnorm, 
-                  color = "red", 
-                  size = 1, 
-                  args = list(mean = theory.mean, 
-                              sd = theory.sd)) +
+    # draw the actual density curve.
+    geom_density(size = 1, 
+                 color = "red") +
     labs(title = "Averages of samples from exponential distribution", 
          x = "Mean of samples from exponential distribution", 
          y = "Density")
 ```
 
-Green line is drawn using theoretical mean and standard deviation. Red line is drawn using mean and standard deviation values calculated on the actual simulated data. These curves are the visual evidence that the simulated collection of averages has normal distribution.  
+Green line is drawn using theoretical mean and standard deviation. Red line is the density of the actual simulated data. These curves are the visual evidence that the simulated collection of averages has normal distribution.  
 
 There is another way to show that the distribution is normal using a Q-Q plot. Here is how it looks like:
   
@@ -259,12 +256,9 @@ ggplot(data = NULL, aes(simulated)) +
                   size = 1, 
                   args = list(mean = simulated.mean, 
                               sd = simulated.sd)) +
-    # draw a normal distribution curve using calculated mean and sd.
-    stat_function(fun = dnorm, 
-                  color = "red", 
-                  size = 1, 
-                  args = list(mean = theory.mean, 
-                              sd = theory.sd)) +
+    # draw the actual density curve.
+    geom_density(size = 1, 
+                 color = "red") +
     labs(title = "Averages of samples from exponential distribution", 
          x = "Mean of samples from exponential distribution", 
          y = "Density")
